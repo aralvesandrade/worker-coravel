@@ -20,6 +20,9 @@ namespace worker_sqlexpress
                 var jobService = serviceScope.ServiceProvider.GetService<IJobService>();
                 var jobs = jobService.GetAll();
 
+                jobService.Process(jobs[1]);
+
+                /*
                 host.Services.UseScheduler(scheduler =>
                     {
                         foreach (var item in jobs)
@@ -35,6 +38,7 @@ namespace worker_sqlexpress
                         }
                     }
                 );
+                */
             }
 
             host.Run();

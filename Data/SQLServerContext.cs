@@ -11,12 +11,14 @@ namespace worker_sqlexpress.Data
         }
 
         public virtual DbSet<Job> Jobs { get; set; }
+        public virtual DbSet<JobResult> JobsResult { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new JobMap());
+            builder.ApplyConfiguration(new JobResultMap());
         }
     }
 }

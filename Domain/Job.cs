@@ -8,6 +8,7 @@ namespace worker_sqlexpress.Domain
         public string Name { get; set; }
         public string SqlQuery { get; set; }
         public int Seconds { get; set; }
-        public DateTime LastExecuted { get; set; }
+        public DateTime LastRun { get; set; }
+        public DateTime NextExecution { get; set; }
     }
 }
