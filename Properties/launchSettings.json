@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "worker_sqlexpress": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
