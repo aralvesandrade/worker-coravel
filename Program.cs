@@ -10,7 +10,6 @@ namespace worker_sqlexpress
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
@@ -20,9 +19,9 @@ namespace worker_sqlexpress
                 var jobService = serviceScope.ServiceProvider.GetService<IJobService>();
                 var jobs = jobService.GetAll();
 
-                jobService.Process(jobs[1]);
+                //jobService.Process(jobs[1]);
+                //jobService.DeleteDateExpires();
 
-                /*
                 host.Services.UseScheduler(scheduler =>
                     {
                         foreach (var item in jobs)
@@ -38,7 +37,19 @@ namespace worker_sqlexpress
                         }
                     }
                 );
-                */
+
+                host.Services.UseScheduler(scheduler =>
+                    {
+                        scheduler.OnWorker("Date expires delete");
+
+                        scheduler.Schedule(
+                            () =>
+                            {
+                                jobService.DeleteDateExpires();
+                            })
+                        .EverySeconds(10);
+                    }
+                );
             }
 
             host.Run();
@@ -52,9 +63,6 @@ namespace worker_sqlexpress
 
                     var connectionSQLServer = "Server=localhost;Database=worker-db;User Id=sa;Password=SqlExpress123;";
                     services.AddDbContext<SQLServerContext>(options => options.UseSqlServer(connectionSQLServer));
-
-                    var connectionMySql = "Server=localhost;Database=hubcommerce-db;User=root;Password=123;";
-                    services.AddDbContext<MySqlContext>(options => options.UseMySql(connectionMySql));
 
                     services.AddTransient<IJobService, JobService>();
 

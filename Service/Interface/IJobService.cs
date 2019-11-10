@@ -7,5 +7,6 @@ namespace worker_sqlexpress.Service.Interface
     {
         List<Job> GetAll();
         void Process(Job job);
+        void DeleteDateExpires();
     }
 }
