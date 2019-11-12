@@ -22,7 +22,8 @@ namespace worker_sqlexpress.Service
         private readonly List<Job> _jobs = new List<Job> {
             new Job() { Id = 1, Name = "Usuários ativos", SqlQuery = "SELECT * FROM USUARIO WHERE ATIVO = 1", Seconds = 5 },
             new Job() { Id = 2, Name = "Usuários desativados", SqlQuery = "SELECT * FROM USUARIO WHERE ATIVO = 0", Seconds = 10 },
-            new Job() { Id = 3, Name = "Spleep 5 segundos", SqlQuery = "select 1 as id, \"Alexandre\" as name, SLEEP(5) as ativo from dual", Seconds = 10, TimeoutSeconds = 4 }
+            new Job() { Id = 3, Name = "Spleep 5 segundos", SqlQuery = "select 1 as id, \"Alexandre\" as name, SLEEP(5) as ativo from dual", Seconds = 10, TimeoutSeconds = 4 },
+            new Job() { Id = 3, Name = "Spleep 2 segundos", SqlQuery = "select 1 as id, \"Alexandre\" as name, SLEEP(2) as ativo from dual", Seconds = 10 }
         };
 
         public JobService(ILogger<JobService> logger, SQLServerContext db)
@@ -87,15 +88,26 @@ namespace worker_sqlexpress.Service
 
                 using (MySqlCommand cmd = conn.CreateCommand())
                 {
+                    MySqlDataReader reader = null;
+
                     try
                     {
                         if (job.TimeoutSeconds.HasValue)
                             cmd.CommandTimeout = job.TimeoutSeconds.Value;
 
                         cmd.CommandText = query;
-                        var reader = cmd.ExecuteReader();
+
+                        Stopwatch sw = new Stopwatch();
+                        sw.Start();
+
+                        reader = cmd.ExecuteReader();
+
+                        sw.Stop();
+
                         var r = Serialize(reader);
                         var json = JsonConvert.SerializeObject(r);
+
+                        _logger.LogInformation($"Query executado com sucesso em {sw.Elapsed}");
                     }
                     catch (MySqlException ex)
                     {
@@ -115,6 +127,7 @@ namespace worker_sqlexpress.Service
                     }
                     finally
                     {
+                        reader?.Close();
                         conn?.Close();
                     }
                 }

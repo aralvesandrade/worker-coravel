@@ -19,7 +19,7 @@ namespace worker_sqlexpress
                 var jobService = serviceScope.ServiceProvider.GetService<IJobService>();
                 var jobs = jobService.GetAll();
 
-                jobService.Process(jobs[2]);
+                jobService.Process(jobs[3]);
                 //jobService.DeleteDateExpires();
 
                 /*
