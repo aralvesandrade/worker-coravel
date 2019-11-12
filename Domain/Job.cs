@@ -10,5 +10,6 @@ namespace worker_sqlexpress.Domain
         public int Seconds { get; set; }
         public DateTime LastRun { get; set; }
         public DateTime NextExecution { get; set; }
+        public int? TimeoutSeconds { get; set; }
     }
 }

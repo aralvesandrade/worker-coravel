@@ -19,9 +19,10 @@ namespace worker_sqlexpress
                 var jobService = serviceScope.ServiceProvider.GetService<IJobService>();
                 var jobs = jobService.GetAll();
 
-                //jobService.Process(jobs[1]);
+                jobService.Process(jobs[2]);
                 //jobService.DeleteDateExpires();
 
+                /*
                 host.Services.UseScheduler(scheduler =>
                     {
                         foreach (var item in jobs)
@@ -50,6 +51,7 @@ namespace worker_sqlexpress
                         .EverySeconds(10);
                     }
                 );
+                */
             }
 
             host.Run();
