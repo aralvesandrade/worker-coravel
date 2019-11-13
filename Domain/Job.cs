@@ -11,5 +11,8 @@ namespace worker_sqlexpress.Domain
         public DateTime LastRun { get; set; }
         public DateTime NextExecution { get; set; }
         public int? TimeoutSeconds { get; set; }
+        public bool Scheduled { get; set; }
+        public bool Active { get; set; }
+        public bool Processing { get; set; }
     }
 }

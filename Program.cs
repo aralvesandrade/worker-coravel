@@ -51,6 +51,31 @@ namespace worker_sqlexpress
                         .EverySeconds(10);
                     }
                 );
+
+                host.Services.UseScheduler(scheduler =>
+                    {
+                        scheduler.OnWorker("Procurando novos jobs.");
+
+                        scheduler.Schedule(
+                                () =>
+                                {
+                                    var _jobs = jobService.SearchNewJobs();
+
+                                    foreach (var item in _jobs)
+                                    {
+                                        scheduler.OnWorker(item.Name);
+
+                                        scheduler.Schedule(
+                                            () =>
+                                            {
+                                                jobService.Process(item);
+                                            })
+                                        .EverySeconds(item.Seconds);
+                                    }
+                                })
+                            .EveryMinute();
+                    }
+                );
                 */
             }
 

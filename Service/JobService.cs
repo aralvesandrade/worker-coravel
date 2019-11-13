@@ -72,9 +72,34 @@ namespace worker_sqlexpress.Service
             }
         }
 
+        public List<Job> SearchNewJobs()
+        {
+            return _db.Jobs.Where(x => x.Scheduled == false).ToList();
+        }
+
         public void Process(Job job)
         {
             _logger.LogInformation($"Execution : {job.Name}");
+
+            if (!job.Scheduled)
+                job.Scheduled = true;
+
+            var optionsBuilder = new DbContextOptionsBuilder<SQLServerContext>();
+            var connectionSQLServer = "Server=localhost;Database=worker-db;User Id=sa;Password=SqlExpress123;";
+            optionsBuilder.UseSqlServer(connectionSQLServer);
+
+            using (var db = new SQLServerContext(optionsBuilder.Options))
+            {
+                try
+                {
+                    db.Jobs.Update(job);
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Erro ao atualizar registro na tabela JOB - Erro: {ex.Message}");
+                }    
+            }
 
             var jobResult = new JobResult { JobName = job.Name };
 
@@ -172,10 +197,6 @@ namespace worker_sqlexpress.Service
                     _logger.LogError($"Erro ao consultar a query: {query} - Erro {ex.Message}");
                 }                                
             }
-
-            var optionsBuilder = new DbContextOptionsBuilder<SQLServerContext>();
-            var connectionSQLServer = "Server=localhost;Database=worker-db;User Id=sa;Password=SqlExpress123;";
-            optionsBuilder.UseSqlServer(connectionSQLServer);
 
             using (var db = new SQLServerContext(optionsBuilder.Options))
             {
